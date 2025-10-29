@@ -56,7 +56,7 @@ def download_pretrained_marh(overwrite=False):
 
 
 if __name__ == "__main__":
-    download_pretrained_vae()
-    download_pretrained_marb()
+    # download_pretrained_vae()
+    # download_pretrained_marb()
     download_pretrained_marl()
     download_pretrained_marh()

@@ -1,3 +1,4 @@
+from pathlib import Path
 import math
 import sys
 from typing import Iterable
@@ -14,7 +15,7 @@ import numpy as np
 import os
 import copy
 import time
-
+from util.timer import timer
 
 def update_ema(target_params, source_params, rate=0.99):
     """
@@ -102,7 +103,7 @@ def train_one_epoch(model, vae,
 
 
 def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log_writer=None, cfg=1.0,
-             use_ema=True):
+             use_ema=True, enable_timer=False):
     model_without_ddp.eval()
     num_steps = args.num_images // (batch_size * misc.get_world_size()) + 1
     save_folder = os.path.join(args.output_dir, "ariter{}-diffsteps{}-temp{}-{}cfg{}-image{}".format(args.num_iter,
@@ -115,6 +116,7 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
         save_folder = save_folder + "_ema"
     if args.evaluate:
         save_folder = save_folder + "_evaluate"
+    save_folder = save_folder + f"{epoch}"
     print("Save to:", save_folder)
     if misc.get_rank() == 0:
         if not os.path.exists(save_folder):
@@ -153,10 +155,12 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
         # generation
         with torch.no_grad():
             with torch.cuda.amp.autocast():
-                sampled_tokens = model_without_ddp.sample_tokens(bsz=batch_size, num_iter=args.num_iter, cfg=cfg,
-                                                                 cfg_schedule=args.cfg_schedule, labels=labels_gen,
-                                                                 temperature=args.temperature)
-                sampled_images = vae.decode(sampled_tokens / 0.2325)
+                with timer(enable_timer, "Rolling MAR"):
+                    sampled_tokens = model_without_ddp.sample_tokens(bsz=batch_size, num_iter=args.num_iter, cfg=cfg,
+                                                                    cfg_schedule=args.cfg_schedule, labels=labels_gen,
+                                                                    temperature=args.temperature, enable_timer=enable_timer)
+                with timer(enable_timer, "VAE Decoding"):
+                    sampled_images = vae.decode(sampled_tokens / 0.2325)
 
         # measure speed after the first generation batch
         if i >= 1:
@@ -165,20 +169,27 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
             gen_img_cnt += batch_size
             print("Generating {} images takes {:.5f} seconds, {:.5f} sec per image".format(gen_img_cnt, used_time, used_time / gen_img_cnt))
 
-        torch.distributed.barrier()
+        try:
+            torch.distributed.barrier()
+        except:
+            pass
         sampled_images = sampled_images.detach().cpu()
         sampled_images = (sampled_images + 1) / 2
 
         # distributed save
-        for b_id in range(sampled_images.size(0)):
-            img_id = i * sampled_images.size(0) * world_size + local_rank * sampled_images.size(0) + b_id
-            if img_id >= args.num_images:
-                break
-            gen_img = np.round(np.clip(sampled_images[b_id].numpy().transpose([1, 2, 0]) * 255, 0, 255))
-            gen_img = gen_img.astype(np.uint8)[:, :, ::-1]
-            cv2.imwrite(os.path.join(save_folder, '{}.png'.format(str(img_id).zfill(5))), gen_img)
+        with timer(enable_timer, "Saving Figures"):
+            for b_id in range(sampled_images.size(0)):
+                img_id = i * sampled_images.size(0) * world_size + local_rank * sampled_images.size(0) + b_id
+                if img_id >= args.num_images:
+                    break
+                gen_img = np.round(np.clip(sampled_images[b_id].numpy().transpose([1, 2, 0]) * 255, 0, 255))
+                gen_img = gen_img.astype(np.uint8)[:, :, ::-1]
+                cv2.imwrite(os.path.join(save_folder, '{}.png'.format(str(img_id).zfill(5))), gen_img)
 
-    torch.distributed.barrier()
+    try:
+        torch.distributed.barrier()
+    except:
+        pass
     time.sleep(10)
 
     # back to no ema
@@ -188,11 +199,17 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
 
     # compute FID and IS
     if log_writer is not None:
-        if args.img_size == 256:
-            input2 = None
-            fid_statistics_file = 'fid_stats/adm_in256_stats.npz'
+        if args.cal_on_the_fly:
+            input2 = f"{args.data_path}/val_flat_{args.img_size}"
+            assert Path(input2).exists(), f"{Path(input2)} does not exist."
+            fid_statistics_file = None
         else:
-            raise NotImplementedError
+            if args.img_size == 256:
+                input2 = None
+                fid_statistics_file = 'fid_stats/adm_in256_stats.npz'
+            else:
+                input2 = None
+                fid_statistics_file = 'fid_stats/adm_in256_stats.npz'
         metrics_dict = torch_fidelity.calculate_metrics(
             input1=save_folder,
             input2=input2,
@@ -215,9 +232,12 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
         log_writer.add_scalar('is{}'.format(postfix), inception_score, epoch)
         print("FID: {:.4f}, Inception Score: {:.4f}".format(fid, inception_score))
         # remove temporal saving folder
-        shutil.rmtree(save_folder)
+        # shutil.rmtree(save_folder)
 
-    torch.distributed.barrier()
+    try:
+        torch.distributed.barrier()
+    except:
+        pass
     time.sleep(10)
 
 

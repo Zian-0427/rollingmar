@@ -431,6 +431,8 @@ class GaussianDiffusion:
         device=None,
         progress=False,
         temperature=1.0,
+        starting_t=None, 
+        denoise_t_per_step=None, 
     ):
         """
         Generate samples from the model.
@@ -463,6 +465,8 @@ class GaussianDiffusion:
             device=device,
             progress=progress,
             temperature=temperature,
+            starting_t=starting_t, 
+            denoise_t_per_step=denoise_t_per_step, 
         ):
             final = sample
         return final["sample"]
@@ -479,6 +483,8 @@ class GaussianDiffusion:
         device=None,
         progress=False,
         temperature=1.0,
+        starting_t=None, 
+        denoise_t_per_step=None, 
     ):
         """
         Generate samples from the model and yield intermediate samples from
@@ -491,17 +497,26 @@ class GaussianDiffusion:
         if noise is not None:
             img = noise
         else:
+            assert denoise_t_per_step is None
             img = th.randn(*shape).cuda()
-        indices = list(range(self.num_timesteps))[::-1]
 
-        if progress:
-            # Lazy import so that we don't depend on tqdm.
-            from tqdm.auto import tqdm
+        if denoise_t_per_step is None:
+            indices = list(range(self.num_timesteps))[::-1]
+        else:
+            indices = list(range(denoise_t_per_step))
 
-            indices = tqdm(indices)
+        # if progress:
+        #     # Lazy import so that we don't depend on tqdm.
+        #     from tqdm.auto import tqdm
 
+        #     indices = tqdm(indices)
+        
         for i in indices:
-            t = th.tensor([i] * shape[0]).cuda()
+            if denoise_t_per_step is None:
+                t = th.tensor([i] * shape[0]).cuda()
+            else:
+                t = starting_t - i
+                assert (t >= 0).all()
             with th.no_grad():
                 out = self.p_sample(
                     model,

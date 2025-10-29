@@ -1,0 +1,7 @@
+__pycache__/
+output_dir/
+pretrained_models/
+64.log
+256.log
+data/
+logs/

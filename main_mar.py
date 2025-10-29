@@ -52,10 +52,11 @@ def get_args_parser():
     parser.add_argument('--cfg', default=1.0, type=float, help="classifier-free guidance")
     parser.add_argument('--cfg_schedule', default="linear", type=str)
     parser.add_argument('--label_drop_prob', default=0.1, type=float)
-    parser.add_argument('--eval_freq', type=int, default=40, help='evaluation frequency')
-    parser.add_argument('--save_last_freq', type=int, default=5, help='save last frequency')
+    parser.add_argument('--eval_freq', type=int, default=20, help='evaluation frequency')
+    parser.add_argument('--save_last_freq', type=int, default=20, help='save last frequency')
     parser.add_argument('--online_eval', action='store_true')
     parser.add_argument('--evaluate', action='store_true')
+    parser.add_argument('--enable_timer', action='store_true')
     parser.add_argument('--eval_bsz', type=int, default=64, help='generation batch size')
 
     # Optimizer parameters
@@ -127,6 +128,7 @@ def get_args_parser():
     # caching latents
     parser.add_argument('--use_cached', action='store_true', dest='use_cached',
                         help='Use cached latents')
+    parser.add_argument('--cal_on_the_fly', action='store_true')
     parser.set_defaults(use_cached=False)
     parser.add_argument('--cached_path', default='', help='path to cached latents')
 
@@ -169,6 +171,7 @@ def main(args):
         dataset_train = CachedFolder(args.cached_path)
     else:
         dataset_train = datasets.ImageFolder(os.path.join(args.data_path, 'train'), transform=transform_train)
+        
     print(dataset_train)
 
     sampler_train = torch.utils.data.DistributedSampler(
@@ -225,7 +228,7 @@ def main(args):
     print("effective batch size: %d" % eff_batch_size)
 
     if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
 
     # no weight decay on bias, norm layers, and diffloss MLP
@@ -236,18 +239,29 @@ def main(args):
 
     # resume training
     if args.resume and os.path.exists(os.path.join(args.resume, "checkpoint-last.pth")):
-        checkpoint = torch.load(os.path.join(args.resume, "checkpoint-last.pth"), map_location='cpu')
-        model_without_ddp.load_state_dict(checkpoint['model'])
+        checkpoint = torch.load(os.path.join(args.resume, "checkpoint-last.pth"), map_location='cpu', weights_only=False)
+        original_named_parameters = model_without_ddp.named_parameters()
+        model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
         model_params = list(model_without_ddp.parameters())
-        ema_state_dict = checkpoint['model_ema']
-        ema_params = [ema_state_dict[name].cuda() for name, _ in model_without_ddp.named_parameters()]
+        try:
+            ema_state_dict = checkpoint['model_ema']
+            ema_params = [ema_state_dict[name].cuda() for name, _ in model_without_ddp.named_parameters()]
+        except:
+            print("Cannot load ema. Using model parameters.")
+            ema_params = [param.clone() for param in model_params]
         print("Resume checkpoint %s" % args.resume)
 
         if 'optimizer' in checkpoint and 'epoch' in checkpoint:
-            optimizer.load_state_dict(checkpoint['optimizer'])
+            try:
+                optimizer.load_state_dict(checkpoint['optimizer'])
+            except:
+                print("Can not load optimizer statedict")
             args.start_epoch = checkpoint['epoch'] + 1
             if 'scaler' in checkpoint:
-                loss_scaler.load_state_dict(checkpoint['scaler'])
+                try:
+                    loss_scaler.load_state_dict(checkpoint['scaler'])
+                except:
+                    print("Can not load loss_scaler statedict")
             print("With optim & sched!")
         del checkpoint
     else:
@@ -259,7 +273,7 @@ def main(args):
     if args.evaluate:
         torch.cuda.empty_cache()
         evaluate(model_without_ddp, vae, ema_params, args, 0, batch_size=args.eval_bsz, log_writer=log_writer,
-                 cfg=args.cfg, use_ema=True)
+                 cfg=args.cfg, use_ema=True, enable_timer=args.enable_timer)
         return
 
     # training
@@ -282,15 +296,17 @@ def main(args):
         if epoch % args.save_last_freq == 0 or epoch + 1 == args.epochs:
             misc.save_model(args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
                             loss_scaler=loss_scaler, epoch=epoch, ema_params=ema_params, epoch_name="last")
+            misc.save_model(args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
+                            loss_scaler=loss_scaler, epoch=epoch, ema_params=ema_params, epoch_name=str(epoch))
 
         # online evaluation
-        if args.online_eval and (epoch % args.eval_freq == 0 or epoch + 1 == args.epochs):
+        if args.online_eval and (epoch % args.eval_freq == 0 or epoch + 1 == args.epochs) and epoch != 0:
             torch.cuda.empty_cache()
             evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=args.eval_bsz, log_writer=log_writer,
-                     cfg=1.0, use_ema=True)
+                     cfg=1.0, use_ema=True, enable_timer=args.enable_timer)
             if not (args.cfg == 1.0 or args.cfg == 0.0):
                 evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=args.eval_bsz // 2,
-                         log_writer=log_writer, cfg=args.cfg, use_ema=True)
+                         log_writer=log_writer, cfg=args.cfg, use_ema=True, enable_timer=args.enable_timer)
             torch.cuda.empty_cache()
 
         if misc.is_main_process():

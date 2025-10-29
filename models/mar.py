@@ -10,7 +10,10 @@ from torch.utils.checkpoint import checkpoint
 
 from timm.models.vision_transformer import Block
 
-from models.diffloss import DiffLoss
+from models.diffloss import DiffLoss, TimestepEmbedder
+from einops import rearrange, repeat
+
+from util.timer import timer
 
 
 def mask_by_order(mask_len, order, bsz, seq_len):
@@ -90,6 +93,7 @@ class MAR(nn.Module):
         self.decoder_norm = norm_layer(decoder_embed_dim)
         self.diffusion_pos_embed_learned = nn.Parameter(torch.zeros(1, self.seq_len, decoder_embed_dim))
 
+
         self.initialize_weights()
 
         # --------------------------------------------------------------------------
@@ -103,6 +107,18 @@ class MAR(nn.Module):
             grad_checkpointing=grad_checkpointing
         )
         self.diffusion_batch_mul = diffusion_batch_mul
+
+        assert self.diffloss.train_diffusion.num_timesteps == 1000, "We assume full timestep training (otherwise, remap logic need to be added for training)."
+        self.train_num_timesteps = self.diffloss.train_diffusion.num_timesteps
+        self.gen_num_timesteps = self.diffloss.gen_diffusion.num_timesteps
+        self.q_sample = self.diffloss.train_diffusion.q_sample
+        self.t_sample = self.diffloss.t_sample # Sample from training timesteps
+        self.timestep_mapper = torch.tensor(self.diffloss.gen_diffusion.timestep_map).cuda()
+        # self.encoder_t_embedding = nn.Embedding(self.train_num_timesteps, encoder_embed_dim) # This can be changed to a more continous one.
+        # self.decoder_t_embedding = nn.Embedding(self.train_num_timesteps, decoder_embed_dim)
+        self.encoder_t_embedding = TimestepEmbedder(encoder_embed_dim)
+        self.decoder_t_embedding = TimestepEmbedder(decoder_embed_dim)
+
 
     def initialize_weights(self):
         # parameters
@@ -169,13 +185,15 @@ class MAR(nn.Module):
                              src=torch.ones(bsz, seq_len, device=x.device))
         return mask
 
-    def forward_mae_encoder(self, x, mask, class_embedding):
+    def forward_mae_encoder(self, x, mask, class_embedding, t):
         x = self.z_proj(x)
+        x = x + self.encoder_t_embedding(t.flatten(0, 1)).view(t.shape[0], t.shape[1], -1) # Encoder time embedding
+
         bsz, seq_len, embed_dim = x.shape
 
         # concat buffer
         x = torch.cat([torch.zeros(bsz, self.buffer_size, embed_dim, device=x.device), x], dim=1)
-        mask_with_buffer = torch.cat([torch.zeros(x.size(0), self.buffer_size, device=x.device), mask], dim=1)
+        # mask_with_buffer = torch.cat([torch.zeros(x.size(0), self.buffer_size, device=x.device), mask], dim=1)
 
         # random drop class embedding during training
         if self.training:
@@ -190,7 +208,7 @@ class MAR(nn.Module):
         x = self.z_proj_ln(x)
 
         # dropping
-        x = x[(1-mask_with_buffer).nonzero(as_tuple=True)].reshape(bsz, -1, embed_dim)
+        # x = x[(1-mask_with_buffer).nonzero(as_tuple=True)].reshape(bsz, -1, embed_dim)
 
         # apply Transformer blocks
         if self.grad_checkpointing and not torch.jit.is_scripting():
@@ -203,15 +221,18 @@ class MAR(nn.Module):
 
         return x
 
-    def forward_mae_decoder(self, x, mask):
+    def forward_mae_decoder(self, x, mask, t):
 
         x = self.decoder_embed(x)
-        mask_with_buffer = torch.cat([torch.zeros(x.size(0), self.buffer_size, device=x.device), mask], dim=1)
+        x[:, self.buffer_size:] = x[:, self.buffer_size:] + self.decoder_t_embedding(t.flatten(0, 1)).view(t.shape[0], t.shape[1], -1) # Encoder time embedding
+
+        # mask_with_buffer = torch.cat([torch.zeros(x.size(0), self.buffer_size, device=x.device), mask], dim=1)
 
         # pad mask tokens
-        mask_tokens = self.mask_token.repeat(mask_with_buffer.shape[0], mask_with_buffer.shape[1], 1).to(x.dtype)
-        x_after_pad = mask_tokens.clone()
-        x_after_pad[(1 - mask_with_buffer).nonzero(as_tuple=True)] = x.reshape(x.shape[0] * x.shape[1], x.shape[2])
+        # mask_tokens = self.mask_token.repeat(mask_with_buffer.shape[0], mask_with_buffer.shape[1], 1).to(x.dtype)
+        # x_after_pad = mask_tokens.clone()
+        # x_after_pad[(1 - mask_with_buffer).nonzero(as_tuple=True)] = x.reshape(x.shape[0] * x.shape[1], x.shape[2])
+        x_after_pad = x
 
         # decoder position embedding
         x = x_after_pad + self.decoder_pos_embed_learned
@@ -229,12 +250,13 @@ class MAR(nn.Module):
         x = x + self.diffusion_pos_embed_learned
         return x
 
-    def forward_loss(self, z, target, mask):
+    def forward_loss(self, z, target, mask, t):
         bsz, seq_len, _ = target.shape
         target = target.reshape(bsz * seq_len, -1).repeat(self.diffusion_batch_mul, 1)
         z = z.reshape(bsz*seq_len, -1).repeat(self.diffusion_batch_mul, 1)
         mask = mask.reshape(bsz*seq_len).repeat(self.diffusion_batch_mul)
-        loss = self.diffloss(z=z, target=target, mask=mask)
+        t = t.reshape(bsz*seq_len).repeat(self.diffusion_batch_mul)
+        loss = self.diffloss(z=z, target=target, mask=mask, embed_t=t)
         return loss
 
     def forward(self, imgs, labels):
@@ -245,21 +267,25 @@ class MAR(nn.Module):
         # patchify and mask (drop) tokens
         x = self.patchify(imgs)
         gt_latents = x.clone().detach()
-        orders = self.sample_orders(bsz=x.size(0))
-        mask = self.random_masking(x, orders)
+
+        # orders = self.sample_orders(bsz=x.size(0))
+        # mask = self.random_masking(x, orders)
+        mask = torch.ones(x.shape[0], x.shape[1], device=x.device)
+        t = self.t_sample(shape=(x.shape[0], x.shape[1]), device=x.device)
+        x = self.q_sample(x.flatten(0, 1), t.flatten(0, 1), noise=None).view(x.shape) # Diffusion forcing training.
 
         # mae encoder
-        x = self.forward_mae_encoder(x, mask, class_embedding)
+        x = self.forward_mae_encoder(x, mask, class_embedding, t)
 
         # mae decoder
-        z = self.forward_mae_decoder(x, mask)
+        z = self.forward_mae_decoder(x, mask, t)
 
         # diffloss
-        loss = self.forward_loss(z=z, target=gt_latents, mask=mask)
+        loss = self.forward_loss(z=z, target=gt_latents, mask=mask, t=t)
 
         return loss
 
-    def sample_tokens(self, bsz, num_iter=64, cfg=1.0, cfg_schedule="linear", labels=None, temperature=1.0, progress=False):
+    def sample_tokens(self, bsz, num_iter=64, cfg=1.0, cfg_schedule="linear", labels=None, temperature=1.0, progress=False, enable_timer=False):
 
         # init and sample generation orders
         mask = torch.ones(bsz, self.seq_len).cuda()
@@ -267,10 +293,24 @@ class MAR(nn.Module):
         orders = self.sample_orders(bsz)
 
         indices = list(range(num_iter))
-        if progress:
-            indices = tqdm(indices)
+        # indices = tqdm(indices)
+
+        # Init for rolling generation
+        t_map = torch.ones((bsz, self.seq_len), device=tokens.device, dtype=torch.long) * (self.gen_num_timesteps - 1)
+        done_map = torch.zeros((bsz, self.seq_len), device=tokens.device, dtype=torch.bool)
+        denoising_map = torch.zeros((bsz, self.seq_len), device=tokens.device, dtype=torch.bool)
+
+        denoise_t_per_step = self.gen_num_timesteps // num_iter
+        assert self.gen_num_timesteps // num_iter > 0 and self.gen_num_timesteps % num_iter == 0, f"Please ensure that the diffusion step is a multiple of the AR step."
+
+        tokens = torch.randn_like(tokens)
+        mask_ratio = 1.0
+
         # generate latents
-        for step in indices:
+        cnt = 0
+        while torch.all(done_map) == False:
+        # for step in indices:
+            step = indices[cnt] if cnt < len(indices) else indices[-1]
             cur_tokens = tokens.clone()
 
             # class embedding and CFG
@@ -282,12 +322,16 @@ class MAR(nn.Module):
                 tokens = torch.cat([tokens, tokens], dim=0)
                 class_embedding = torch.cat([class_embedding, self.fake_latent.repeat(bsz, 1)], dim=0)
                 mask = torch.cat([mask, mask], dim=0)
+                t_map_iter = self.timestep_mapper[torch.cat([t_map, t_map], dim=0)]
+            else:
+                t_map_iter = self.timestep_mapper[t_map]
+            
+            with timer(enable_timer, f"Rolling MAR Enc-Dec"):
+                # mae encoder
+                x = self.forward_mae_encoder(tokens, None, class_embedding, t_map_iter)
 
-            # mae encoder
-            x = self.forward_mae_encoder(tokens, mask, class_embedding)
-
-            # mae decoder
-            z = self.forward_mae_decoder(x, mask)
+                # mae decoder
+                z = self.forward_mae_decoder(x, None, t_map_iter)
 
             # mask ratio for the next round, following MaskGIT and MAGE.
             mask_ratio = np.cos(math.pi / 2. * (step + 1) / num_iter)
@@ -304,11 +348,23 @@ class MAR(nn.Module):
             else:
                 mask_to_pred = torch.logical_xor(mask[:bsz].bool(), mask_next.bool())
             mask = mask_next
+
+            denoising_map[mask_to_pred] = True
+            denoising_map[done_map] = False
+            starting_point = cur_tokens[denoising_map]
+            starting_t = t_map[denoising_map]
+
             if not cfg == 1.0:
                 mask_to_pred = torch.cat([mask_to_pred, mask_to_pred], dim=0)
-
+                denoising_map_iter = torch.cat([denoising_map, denoising_map], dim=0)
+                starting_point = torch.cat([starting_point, starting_point], dim=0)
+                starting_t = torch.cat([starting_t, starting_t], dim=0)
+            else:
+                denoising_map_iter = denoising_map
+            embed_t = t_map_iter[denoising_map_iter]
+            
             # sample token latents for this step
-            z = z[mask_to_pred.nonzero(as_tuple=True)]
+            z = z[denoising_map_iter]
             # cfg schedule follow Muse
             if cfg_schedule == "linear":
                 cfg_iter = 1 + (cfg - 1) * (self.seq_len - mask_len[0]) / self.seq_len
@@ -316,13 +372,26 @@ class MAR(nn.Module):
                 cfg_iter = cfg
             else:
                 raise NotImplementedError
-            sampled_token_latent = self.diffloss.sample(z, temperature, cfg_iter)
+            with timer(enable_timer, f"Rolling MAR Diff Head (Token num {z.shape[0]})"):
+                sampled_token_latent = self.diffloss.sample(z, temperature, cfg_iter, denoise_t_per_step, starting_point=starting_point, starting_t=starting_t, embed_t=embed_t)
             if not cfg == 1.0:
                 sampled_token_latent, _ = sampled_token_latent.chunk(2, dim=0)  # Remove null class samples
-                mask_to_pred, _ = mask_to_pred.chunk(2, dim=0)
-
-            cur_tokens[mask_to_pred.nonzero(as_tuple=True)] = sampled_token_latent
+                denoising_map_iter, _ = denoising_map_iter.chunk(2, dim=0)
+            cur_tokens[denoising_map_iter.nonzero(as_tuple=True)] = sampled_token_latent
             tokens = cur_tokens.clone()
+
+            # Be careful...
+            t_map[denoising_map_iter.nonzero(as_tuple=True)] = t_map[denoising_map_iter.nonzero(as_tuple=True)] - denoise_t_per_step
+            assert (t_map >= -1).all()
+            t_map[t_map == -1] = 0
+            done_map[t_map == 0] = True
+
+            # print(f"After the {cnt}-th AR step: "
+            # f"Average_t: {t_map.float().mean():.4f}, max_t: {t_map.max()}, min_t: {t_map.min()} | "
+            # f"Denoising Num: {denoising_map.sum() // denoising_map.shape[0]} | "
+            # f"Done Num: {done_map.sum() // done_map.shape[0]}")
+            
+            cnt += 1
 
         # unpatchify
         tokens = self.unpatchify(tokens)

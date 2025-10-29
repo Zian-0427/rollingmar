@@ -1,0 +1,69 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python 调试程序: 当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "7"
+            },
+            "args": [
+                "--img_size",
+                "64",
+                "--vae_path",
+                "pretrained_models/vae/kl16.ckpt",
+                "--vae_embed_dim",
+                "16",
+                "--vae_stride",
+                "16",
+                "--patch_size",
+                "1",
+                "--model",
+                "mar_base",
+                "--diffloss_d",
+                "6",
+                "--diffloss_w",
+                "1024",
+                "--epochs",
+                "800",
+                "--warmup_epochs",
+                "100",
+                "--batch_size",
+                "128",
+                "--blr",
+                "1.0e-4",
+                "--diffusion_batch_mul",
+                "4",
+                "--output_dir",
+                "output_dir/test",
+                "--data_path",
+                "/data/imagenet_50_private",
+                "--online_eval",
+                "--num_images",
+                "2500",
+                "--num_iter",
+                "100",
+                "--cal_on_the_fly",
+                "--class_num",
+                "50",
+                "--use_cached",
+                "--cached_path",
+                "/data/imagenet_50_private/cached_64",
+                "--save_last_freq",
+                "100",
+                "--resume",
+                "output_dir/test",
+                "--eval_freq",
+                "1"
+                // "--evaluate"
+            ]
+        },
+
+    ]
+}

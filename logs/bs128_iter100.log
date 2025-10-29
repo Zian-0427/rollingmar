@@ -1,0 +1,401 @@
+[16:12:11.932620] Generation step 1/79
+[16:12:12.047248] Rolling MAR Enc-Dec runtime: 0.10836052894592285s
+[16:12:12.060244] Rolling MAR Diff Head (Token num 128) runtime: 0.011852741241455078s
+[16:12:12.169271] Rolling MAR Enc-Dec runtime: 0.10841059684753418s
+[16:12:12.174471] Rolling MAR Diff Head (Token num 256) runtime: 0.004213571548461914s
+[16:12:12.283998] Rolling MAR Enc-Dec runtime: 0.10900521278381348s
+[16:12:12.288649] Rolling MAR Diff Head (Token num 384) runtime: 0.003674745559692383s
+[16:12:12.397277] Rolling MAR Enc-Dec runtime: 0.10811614990234375s
+[16:12:12.401799] Rolling MAR Diff Head (Token num 512) runtime: 0.003609180450439453s
+[16:12:12.510134] Rolling MAR Enc-Dec runtime: 0.10778021812438965s
+[16:12:12.515286] Rolling MAR Diff Head (Token num 640) runtime: 0.003919839859008789s
+[16:12:12.624121] Rolling MAR Enc-Dec runtime: 0.10829925537109375s
+[16:12:12.628640] Rolling MAR Diff Head (Token num 768) runtime: 0.0036029815673828125s
+[16:12:12.738944] Rolling MAR Enc-Dec runtime: 0.1097872257232666s
+[16:12:12.743556] Rolling MAR Diff Head (Token num 896) runtime: 0.0036773681640625s
+[16:12:12.854551] Rolling MAR Enc-Dec runtime: 0.11046075820922852s
+[16:12:12.859143] Rolling MAR Diff Head (Token num 1024) runtime: 0.003657102584838867s
+[16:12:12.969291] Rolling MAR Enc-Dec runtime: 0.1096043586730957s
+[16:12:12.973902] Rolling MAR Diff Head (Token num 1152) runtime: 0.0036814212799072266s
+[16:12:13.083679] Rolling MAR Enc-Dec runtime: 0.10926985740661621s
+[16:12:13.088255] Rolling MAR Diff Head (Token num 1280) runtime: 0.0036771297454833984s
+[16:12:13.198567] Rolling MAR Enc-Dec runtime: 0.10979652404785156s
+[16:12:13.203280] Rolling MAR Diff Head (Token num 1408) runtime: 0.003731250762939453s
+[16:12:13.313411] Rolling MAR Enc-Dec runtime: 0.10961079597473145s
+[16:12:13.318018] Rolling MAR Diff Head (Token num 1536) runtime: 0.0036623477935791016s
+[16:12:13.427742] Rolling MAR Enc-Dec runtime: 0.1092064380645752s
+[16:12:13.432241] Rolling MAR Diff Head (Token num 1664) runtime: 0.0035719871520996094s
+[16:12:13.542474] Rolling MAR Enc-Dec runtime: 0.10972809791564941s
+[16:12:13.547060] Rolling MAR Diff Head (Token num 1792) runtime: 0.003687143325805664s
+[16:12:13.657561] Rolling MAR Enc-Dec runtime: 0.10997986793518066s
+[16:12:13.662289] Rolling MAR Diff Head (Token num 1920) runtime: 0.003787994384765625s
+[16:12:13.771554] Rolling MAR Enc-Dec runtime: 0.10873723030090332s
+[16:12:13.776327] Rolling MAR Diff Head (Token num 2048) runtime: 0.0038123130798339844s
+[16:12:13.886626] Rolling MAR Enc-Dec runtime: 0.10977625846862793s
+[16:12:13.891489] Rolling MAR Diff Head (Token num 2176) runtime: 0.0038619041442871094s
+[16:12:14.002088] Rolling MAR Enc-Dec runtime: 0.11007809638977051s
+[16:12:14.006832] Rolling MAR Diff Head (Token num 2304) runtime: 0.0037937164306640625s
+[16:12:14.116632] Rolling MAR Enc-Dec runtime: 0.10928916931152344s
+[16:12:14.121612] Rolling MAR Diff Head (Token num 2432) runtime: 0.004019737243652344s
+[16:12:14.231761] Rolling MAR Enc-Dec runtime: 0.1096189022064209s
+[16:12:14.236847] Rolling MAR Diff Head (Token num 2560) runtime: 0.004047393798828125s
+[16:12:14.347473] Rolling MAR Enc-Dec runtime: 0.110107421875s
+[16:12:14.352357] Rolling MAR Diff Head (Token num 2688) runtime: 0.003964424133300781s
+[16:12:14.461862] Rolling MAR Enc-Dec runtime: 0.10896492004394531s
+[16:12:14.467566] Rolling MAR Diff Head (Token num 2816) runtime: 0.004270076751708984s
+[16:12:14.577299] Rolling MAR Enc-Dec runtime: 0.10916781425476074s
+[16:12:14.582505] Rolling MAR Diff Head (Token num 2944) runtime: 0.004214763641357422s
+[16:12:14.692990] Rolling MAR Enc-Dec runtime: 0.10996294021606445s
+[16:12:14.698283] Rolling MAR Diff Head (Token num 3072) runtime: 0.0042760372161865234s
+[16:12:14.808579] Rolling MAR Enc-Dec runtime: 0.10976076126098633s
+[16:12:14.813759] Rolling MAR Diff Head (Token num 3200) runtime: 0.004212856292724609s
+[16:12:14.923547] Rolling MAR Enc-Dec runtime: 0.1092681884765625s
+[16:12:14.928671] Rolling MAR Diff Head (Token num 3328) runtime: 0.0041887760162353516s
+[16:12:15.038849] Rolling MAR Enc-Dec runtime: 0.10965299606323242s
+[16:12:15.044208] Rolling MAR Diff Head (Token num 3456) runtime: 0.004351139068603516s
+[16:12:15.154915] Rolling MAR Enc-Dec runtime: 0.11017465591430664s
+[16:12:15.160647] Rolling MAR Diff Head (Token num 3584) runtime: 0.00480341911315918s
+[16:12:15.270817] Rolling MAR Enc-Dec runtime: 0.10965299606323242s
+[16:12:15.276629] Rolling MAR Diff Head (Token num 3712) runtime: 0.004889249801635742s
+[16:12:15.386549] Rolling MAR Enc-Dec runtime: 0.10939383506774902s
+[16:12:15.392338] Rolling MAR Diff Head (Token num 3840) runtime: 0.004830121994018555s
+[16:12:15.502395] Rolling MAR Enc-Dec runtime: 0.10953783988952637s
+[16:12:15.508248] Rolling MAR Diff Head (Token num 3968) runtime: 0.004878997802734375s
+[16:12:15.618955] Rolling MAR Enc-Dec runtime: 0.11018729209899902s
+[16:12:15.625059] Rolling MAR Diff Head (Token num 4096) runtime: 0.005096912384033203s
+[16:12:15.735193] Rolling MAR Enc-Dec runtime: 0.10962843894958496s
+[16:12:15.741157] Rolling MAR Diff Head (Token num 4352) runtime: 0.005038738250732422s
+[16:12:15.850893] Rolling MAR Enc-Dec runtime: 0.10920929908752441s
+[16:12:15.857211] Rolling MAR Diff Head (Token num 4608) runtime: 0.005346536636352539s
+[16:12:15.967485] Rolling MAR Enc-Dec runtime: 0.10973381996154785s
+[16:12:15.974032] Rolling MAR Diff Head (Token num 4864) runtime: 0.005563259124755859s
+[16:12:16.084246] Rolling MAR Enc-Dec runtime: 0.10968446731567383s
+[16:12:16.090606] Rolling MAR Diff Head (Token num 5120) runtime: 0.005432844161987305s
+[16:12:16.200963] Rolling MAR Enc-Dec runtime: 0.10982847213745117s
+[16:12:16.207968] Rolling MAR Diff Head (Token num 5504) runtime: 0.006045341491699219s
+[16:12:16.318119] Rolling MAR Enc-Dec runtime: 0.10963606834411621s
+[16:12:16.325257] Rolling MAR Diff Head (Token num 5760) runtime: 0.006141185760498047s
+[16:12:16.435442] Rolling MAR Enc-Dec runtime: 0.10964059829711914s
+[16:12:16.443020] Rolling MAR Diff Head (Token num 6016) runtime: 0.006426095962524414s
+[16:12:16.553196] Rolling MAR Enc-Dec runtime: 0.10963034629821777s
+[16:12:16.560705] Rolling MAR Diff Head (Token num 6272) runtime: 0.00654292106628418s
+[16:12:16.671561] Rolling MAR Enc-Dec runtime: 0.1103050708770752s
+[16:12:16.679149] Rolling MAR Diff Head (Token num 6656) runtime: 0.006615161895751953s
+[16:12:16.789526] Rolling MAR Enc-Dec runtime: 0.1098318099975586s
+[16:12:16.797138] Rolling MAR Diff Head (Token num 6912) runtime: 0.00667119026184082s
+[16:12:16.907636] Rolling MAR Enc-Dec runtime: 0.10996556282043457s
+[16:12:16.915819] Rolling MAR Diff Head (Token num 7296) runtime: 0.007241249084472656s
+[16:12:17.025975] Rolling MAR Enc-Dec runtime: 0.10962557792663574s
+[16:12:17.034404] Rolling MAR Diff Head (Token num 7552) runtime: 0.007441520690917969s
+[16:12:17.144252] Rolling MAR Enc-Dec runtime: 0.10928940773010254s
+[16:12:17.153188] Rolling MAR Diff Head (Token num 7936) runtime: 0.007831096649169922s
+[16:12:17.263160] Rolling MAR Enc-Dec runtime: 0.10938119888305664s
+[16:12:17.272206] Rolling MAR Diff Head (Token num 8192) runtime: 0.007993221282958984s
+[16:12:17.382183] Rolling MAR Enc-Dec runtime: 0.10939669609069824s
+[16:12:17.391308] Rolling MAR Diff Head (Token num 8576) runtime: 0.008118629455566406s
+[16:12:17.501983] Rolling MAR Enc-Dec runtime: 0.1101071834564209s
+[16:12:17.511578] Rolling MAR Diff Head (Token num 8960) runtime: 0.008560419082641602s
+[16:12:17.622684] Rolling MAR Enc-Dec runtime: 0.1105356216430664s
+[16:12:17.632913] Rolling MAR Diff Head (Token num 9344) runtime: 0.009145736694335938s
+[16:12:17.743357] Rolling MAR Enc-Dec runtime: 0.10986447334289551s
+[16:12:17.753064] Rolling MAR Diff Head (Token num 9600) runtime: 0.008678436279296875s
+[16:12:17.864156] Rolling MAR Enc-Dec runtime: 0.11045694351196289s
+[16:12:17.874276] Rolling MAR Diff Head (Token num 9984) runtime: 0.009053230285644531s
+[16:12:17.984795] Rolling MAR Enc-Dec runtime: 0.10990476608276367s
+[16:12:17.994878] Rolling MAR Diff Head (Token num 10368) runtime: 0.009075403213500977s
+[16:12:18.105995] Rolling MAR Enc-Dec runtime: 0.11053252220153809s
+[16:12:18.116862] Rolling MAR Diff Head (Token num 10752) runtime: 0.009828329086303711s
+[16:12:18.228129] Rolling MAR Enc-Dec runtime: 0.11068940162658691s
+[16:12:18.239651] Rolling MAR Diff Head (Token num 11136) runtime: 0.010457992553710938s
+[16:12:18.349864] Rolling MAR Enc-Dec runtime: 0.10961389541625977s
+[16:12:18.361298] Rolling MAR Diff Head (Token num 11520) runtime: 0.01032710075378418s
+[16:12:18.471405] Rolling MAR Enc-Dec runtime: 0.10950350761413574s
+[16:12:18.482879] Rolling MAR Diff Head (Token num 11904) runtime: 0.010468721389770508s
+[16:12:18.592836] Rolling MAR Enc-Dec runtime: 0.1093757152557373s
+[16:12:18.604690] Rolling MAR Diff Head (Token num 12288) runtime: 0.010832786560058594s
+[16:12:18.715742] Rolling MAR Enc-Dec runtime: 0.11046385765075684s
+[16:12:18.728030] Rolling MAR Diff Head (Token num 12800) runtime: 0.011255741119384766s
+[16:12:18.838331] Rolling MAR Enc-Dec runtime: 0.10971617698669434s
+[16:12:18.850721] Rolling MAR Diff Head (Token num 13184) runtime: 0.011396646499633789s
+[16:12:18.960620] Rolling MAR Enc-Dec runtime: 0.10931205749511719s
+[16:12:18.973628] Rolling MAR Diff Head (Token num 13568) runtime: 0.011956930160522461s
+[16:12:19.083656] Rolling MAR Enc-Dec runtime: 0.10943722724914551s
+[16:12:19.096814] Rolling MAR Diff Head (Token num 13952) runtime: 0.012106895446777344s
+[16:12:19.207454] Rolling MAR Enc-Dec runtime: 0.1100468635559082s
+[16:12:19.220964] Rolling MAR Diff Head (Token num 14464) runtime: 0.012446165084838867s
+[16:12:19.331747] Rolling MAR Enc-Dec runtime: 0.11017847061157227s
+[16:12:19.345372] Rolling MAR Diff Head (Token num 14848) runtime: 0.012601137161254883s
+[16:12:19.456396] Rolling MAR Enc-Dec runtime: 0.11041688919067383s
+[16:12:19.470390] Rolling MAR Diff Head (Token num 15232) runtime: 0.012979984283447266s
+[16:12:19.580937] Rolling MAR Enc-Dec runtime: 0.10994529724121094s
+[16:12:19.595178] Rolling MAR Diff Head (Token num 15744) runtime: 0.013200521469116211s
+[16:12:19.704974] Rolling MAR Enc-Dec runtime: 0.10921406745910645s
+[16:12:19.719440] Rolling MAR Diff Head (Token num 16128) runtime: 0.013416528701782227s
+[16:12:19.829482] Rolling MAR Enc-Dec runtime: 0.10944175720214844s
+[16:12:19.843775] Rolling MAR Diff Head (Token num 16640) runtime: 0.013254165649414062s
+[16:12:19.953834] Rolling MAR Enc-Dec runtime: 0.10944581031799316s
+[16:12:19.968354] Rolling MAR Diff Head (Token num 17024) runtime: 0.013482332229614258s
+[16:12:20.078665] Rolling MAR Enc-Dec runtime: 0.10973119735717773s
+[16:12:20.094043] Rolling MAR Diff Head (Token num 17536) runtime: 0.014348506927490234s
+[16:12:20.204106] Rolling MAR Enc-Dec runtime: 0.10945630073547363s
+[16:12:20.219745] Rolling MAR Diff Head (Token num 17920) runtime: 0.014603614807128906s
+[16:12:20.329968] Rolling MAR Enc-Dec runtime: 0.1096348762512207s
+[16:12:20.346279] Rolling MAR Diff Head (Token num 18432) runtime: 0.015053272247314453s
+[16:12:20.455861] Rolling MAR Enc-Dec runtime: 0.10898399353027344s
+[16:12:20.472311] Rolling MAR Diff Head (Token num 18944) runtime: 0.015294551849365234s
+[16:12:20.582961] Rolling MAR Enc-Dec runtime: 0.11005449295043945s
+[16:12:20.599744] Rolling MAR Diff Head (Token num 19328) runtime: 0.015655040740966797s
+[16:12:20.709883] Rolling MAR Enc-Dec runtime: 0.10954046249389648s
+[16:12:20.726925] Rolling MAR Diff Head (Token num 19840) runtime: 0.015944719314575195s
+[16:12:20.837049] Rolling MAR Enc-Dec runtime: 0.10943412780761719s
+[16:12:20.853871] Rolling MAR Diff Head (Token num 20352) runtime: 0.015721797943115234s
+[16:12:20.963186] Rolling MAR Enc-Dec runtime: 0.10871505737304688s
+[16:12:20.980052] Rolling MAR Diff Head (Token num 20736) runtime: 0.015802621841430664s
+[16:12:21.089954] Rolling MAR Enc-Dec runtime: 0.10929679870605469s
+[16:12:21.108022] Rolling MAR Diff Head (Token num 21248) runtime: 0.01691293716430664s
+[16:12:21.217945] Rolling MAR Enc-Dec runtime: 0.10928654670715332s
+[16:12:21.236339] Rolling MAR Diff Head (Token num 21760) runtime: 0.017287254333496094s
+[16:12:21.345933] Rolling MAR Enc-Dec runtime: 0.108978271484375s
+[16:12:21.364042] Rolling MAR Diff Head (Token num 22272) runtime: 0.016953706741333008s
+[16:12:21.473889] Rolling MAR Enc-Dec runtime: 0.10924410820007324s
+[16:12:21.492818] Rolling MAR Diff Head (Token num 22656) runtime: 0.017815589904785156s
+[16:12:21.602727] Rolling MAR Enc-Dec runtime: 0.10930013656616211s
+[16:12:21.621514] Rolling MAR Diff Head (Token num 23168) runtime: 0.01769089698791504s
+[16:12:21.730893] Rolling MAR Enc-Dec runtime: 0.10874819755554199s
+[16:12:21.749685] Rolling MAR Diff Head (Token num 23680) runtime: 0.017706871032714844s
+[16:12:21.858767] Rolling MAR Enc-Dec runtime: 0.10846948623657227s
+[16:12:21.878114] Rolling MAR Diff Head (Token num 24192) runtime: 0.018233776092529297s
+[16:12:21.987148] Rolling MAR Enc-Dec runtime: 0.10842204093933105s
+[16:12:22.007385] Rolling MAR Diff Head (Token num 24704) runtime: 0.019095420837402344s
+[16:12:22.116213] Rolling MAR Enc-Dec runtime: 0.10823202133178711s
+[16:12:22.136130] Rolling MAR Diff Head (Token num 25216) runtime: 0.018778562545776367s
+[16:12:22.244257] Rolling MAR Enc-Dec runtime: 0.10751938819885254s
+[16:12:22.264447] Rolling MAR Diff Head (Token num 25728) runtime: 0.01904439926147461s
+[16:12:22.372637] Rolling MAR Enc-Dec runtime: 0.10757565498352051s
+[16:12:22.393199] Rolling MAR Diff Head (Token num 26240) runtime: 0.019423246383666992s
+[16:12:22.501253] Rolling MAR Enc-Dec runtime: 0.1074376106262207s
+[16:12:22.522004] Rolling MAR Diff Head (Token num 26752) runtime: 0.019606590270996094s
+[16:12:22.630153] Rolling MAR Enc-Dec runtime: 0.10753560066223145s
+[16:12:22.651701] Rolling MAR Diff Head (Token num 27136) runtime: 0.02017951011657715s
+[16:12:22.760477] Rolling MAR Enc-Dec runtime: 0.108123779296875s
+[16:12:22.783340] Rolling MAR Diff Head (Token num 27648) runtime: 0.021489858627319336s
+[16:12:22.891593] Rolling MAR Enc-Dec runtime: 0.10710787773132324s
+[16:12:22.913289] Rolling MAR Diff Head (Token num 28160) runtime: 0.020559072494506836s
+[16:12:23.021215] Rolling MAR Enc-Dec runtime: 0.10732460021972656s
+[16:12:23.043221] Rolling MAR Diff Head (Token num 28672) runtime: 0.02088451385498047s
+[16:12:23.151267] Rolling MAR Enc-Dec runtime: 0.10744762420654297s
+[16:12:23.173498] Rolling MAR Diff Head (Token num 29184) runtime: 0.021127939224243164s
+[16:12:23.281453] Rolling MAR Enc-Dec runtime: 0.10735678672790527s
+[16:12:23.304118] Rolling MAR Diff Head (Token num 29696) runtime: 0.021543025970458984s
+[16:12:23.411982] Rolling MAR Enc-Dec runtime: 0.10727739334106445s
+[16:12:23.434938] Rolling MAR Diff Head (Token num 30208) runtime: 0.021848440170288086s
+[16:12:23.542366] Rolling MAR Enc-Dec runtime: 0.10684871673583984s
+[16:12:23.565490] Rolling MAR Diff Head (Token num 30720) runtime: 0.02201557159423828s
+[16:12:23.673160] Rolling MAR Enc-Dec runtime: 0.1071004867553711s
+[16:12:23.696791] Rolling MAR Diff Head (Token num 31232) runtime: 0.022494792938232422s
+[16:12:23.803976] Rolling MAR Enc-Dec runtime: 0.10660219192504883s
+[16:12:23.827900] Rolling MAR Diff Head (Token num 31744) runtime: 0.02278447151184082s
+[16:12:23.935548] Rolling MAR Enc-Dec runtime: 0.10706257820129395s
+[16:12:23.959751] Rolling MAR Diff Head (Token num 32256) runtime: 0.023047924041748047s
+[16:12:24.066858] Rolling MAR Enc-Dec runtime: 0.1065218448638916s
+[16:12:24.091336] Rolling MAR Diff Head (Token num 32640) runtime: 0.023334741592407227s
+[16:12:24.199124] Rolling MAR Enc-Dec runtime: 0.1071770191192627s
+[16:12:24.223419] Rolling MAR Diff Head (Token num 32512) runtime: 0.023159503936767578s
+[16:12:24.330427] Rolling MAR Enc-Dec runtime: 0.10643792152404785s
+[16:12:24.354608] Rolling MAR Diff Head (Token num 32384) runtime: 0.023061752319335938s
+[16:12:24.461791] Rolling MAR Enc-Dec runtime: 0.1065821647644043s
+[16:12:24.485950] Rolling MAR Diff Head (Token num 32256) runtime: 0.023032426834106445s
+[16:12:24.592854] Rolling MAR Enc-Dec runtime: 0.10631632804870605s
+[16:12:24.616851] Rolling MAR Diff Head (Token num 32128) runtime: 0.022912025451660156s
+[16:12:24.723875] Rolling MAR Enc-Dec runtime: 0.10642027854919434s
+[16:12:24.747941] Rolling MAR Diff Head (Token num 32000) runtime: 0.02291417121887207s
+[16:12:24.854642] Rolling MAR Enc-Dec runtime: 0.1061093807220459s
+[16:12:24.878467] Rolling MAR Diff Head (Token num 31872) runtime: 0.022734403610229492s
+[16:12:24.985288] Rolling MAR Enc-Dec runtime: 0.10623526573181152s
+[16:12:25.009069] Rolling MAR Diff Head (Token num 31744) runtime: 0.022638797760009766s
+[16:12:25.114974] Rolling MAR Enc-Dec runtime: 0.10529637336730957s
+[16:12:25.138576] Rolling MAR Diff Head (Token num 31616) runtime: 0.02249884605407715s
+[16:12:25.244721] Rolling MAR Enc-Dec runtime: 0.10555481910705566s
+[16:12:25.268248] Rolling MAR Diff Head (Token num 31488) runtime: 0.022422075271606445s
+[16:12:25.374274] Rolling MAR Enc-Dec runtime: 0.10540986061096191s
+[16:12:25.397809] Rolling MAR Diff Head (Token num 31360) runtime: 0.02239513397216797s
+[16:12:25.503510] Rolling MAR Enc-Dec runtime: 0.10510730743408203s
+[16:12:25.526903] Rolling MAR Diff Head (Token num 31232) runtime: 0.022258996963500977s
+[16:12:25.632470] Rolling MAR Enc-Dec runtime: 0.10498905181884766s
+[16:12:25.655684] Rolling MAR Diff Head (Token num 31104) runtime: 0.022069692611694336s
+[16:12:25.761151] Rolling MAR Enc-Dec runtime: 0.10486674308776855s
+[16:12:25.784293] Rolling MAR Diff Head (Token num 30976) runtime: 0.02203822135925293s
+[16:12:25.889964] Rolling MAR Enc-Dec runtime: 0.10508036613464355s
+[16:12:25.912703] Rolling MAR Diff Head (Token num 30848) runtime: 0.02169322967529297s
+[16:12:26.018000] Rolling MAR Enc-Dec runtime: 0.10471749305725098s
+[16:12:26.040863] Rolling MAR Diff Head (Token num 30720) runtime: 0.021795034408569336s
+[16:12:26.146431] Rolling MAR Enc-Dec runtime: 0.10497021675109863s
+[16:12:26.169370] Rolling MAR Diff Head (Token num 30592) runtime: 0.021794557571411133s
+[16:12:26.274512] Rolling MAR Enc-Dec runtime: 0.10452914237976074s
+[16:12:26.297153] Rolling MAR Diff Head (Token num 30464) runtime: 0.021564960479736328s
+[16:12:26.402086] Rolling MAR Enc-Dec runtime: 0.10433101654052734s
+[16:12:26.424812] Rolling MAR Diff Head (Token num 30336) runtime: 0.0216062068939209s
+[16:12:26.529613] Rolling MAR Enc-Dec runtime: 0.10421109199523926s
+[16:12:26.552144] Rolling MAR Diff Head (Token num 30208) runtime: 0.02141737937927246s
+[16:12:26.656846] Rolling MAR Enc-Dec runtime: 0.10409379005432129s
+[16:12:26.679279] Rolling MAR Diff Head (Token num 30080) runtime: 0.02130413055419922s
+[16:12:26.784011] Rolling MAR Enc-Dec runtime: 0.1041254997253418s
+[16:12:26.807927] Rolling MAR Diff Head (Token num 29952) runtime: 0.022327184677124023s
+[16:12:26.912719] Rolling MAR Enc-Dec runtime: 0.10390448570251465s
+[16:12:26.936435] Rolling MAR Diff Head (Token num 29824) runtime: 0.02199530601501465s
+[16:12:27.041575] Rolling MAR Enc-Dec runtime: 0.10442280769348145s
+[16:12:27.064179] Rolling MAR Diff Head (Token num 29696) runtime: 0.02135324478149414s
+[16:12:27.168445] Rolling MAR Enc-Dec runtime: 0.1035926342010498s
+[16:12:27.190853] Rolling MAR Diff Head (Token num 29568) runtime: 0.021181583404541016s
+[16:12:27.295193] Rolling MAR Enc-Dec runtime: 0.10371637344360352s
+[16:12:27.317167] Rolling MAR Diff Head (Token num 29440) runtime: 0.0208284854888916s
+[16:12:27.421023] Rolling MAR Enc-Dec runtime: 0.10327696800231934s
+[16:12:27.442668] Rolling MAR Diff Head (Token num 29312) runtime: 0.020540237426757812s
+[16:12:27.546381] Rolling MAR Enc-Dec runtime: 0.10313534736633301s
+[16:12:27.567992] Rolling MAR Diff Head (Token num 29184) runtime: 0.020491838455200195s
+[16:12:27.671665] Rolling MAR Enc-Dec runtime: 0.1031026840209961s
+[16:12:27.693131] Rolling MAR Diff Head (Token num 29056) runtime: 0.02040410041809082s
+[16:12:27.796816] Rolling MAR Enc-Dec runtime: 0.10311484336853027s
+[16:12:27.818266] Rolling MAR Diff Head (Token num 28928) runtime: 0.020386457443237305s
+[16:12:27.921982] Rolling MAR Enc-Dec runtime: 0.10313963890075684s
+[16:12:27.943391] Rolling MAR Diff Head (Token num 28800) runtime: 0.020294666290283203s
+[16:12:28.047085] Rolling MAR Enc-Dec runtime: 0.10311293601989746s
+[16:12:28.068424] Rolling MAR Diff Head (Token num 28672) runtime: 0.02023768424987793s
+[16:12:28.172150] Rolling MAR Enc-Dec runtime: 0.10312581062316895s
+[16:12:28.193438] Rolling MAR Diff Head (Token num 28416) runtime: 0.020206928253173828s
+[16:12:28.297250] Rolling MAR Enc-Dec runtime: 0.10316061973571777s
+[16:12:28.318645] Rolling MAR Diff Head (Token num 28160) runtime: 0.020091533660888672s
+[16:12:28.422348] Rolling MAR Enc-Dec runtime: 0.10311198234558105s
+[16:12:28.443217] Rolling MAR Diff Head (Token num 27904) runtime: 0.01979827880859375s
+[16:12:28.546957] Rolling MAR Enc-Dec runtime: 0.10315179824829102s
+[16:12:28.568504] Rolling MAR Diff Head (Token num 27648) runtime: 0.0201568603515625s
+[16:12:28.672432] Rolling MAR Enc-Dec runtime: 0.10316848754882812s
+[16:12:28.693098] Rolling MAR Diff Head (Token num 27264) runtime: 0.019448041915893555s
+[16:12:28.796853] Rolling MAR Enc-Dec runtime: 0.10314106941223145s
+[16:12:28.817205] Rolling MAR Diff Head (Token num 27008) runtime: 0.019254446029663086s
+[16:12:28.921102] Rolling MAR Enc-Dec runtime: 0.10332012176513672s
+[16:12:28.941323] Rolling MAR Diff Head (Token num 26752) runtime: 0.019076824188232422s
+[16:12:29.045064] Rolling MAR Enc-Dec runtime: 0.10315275192260742s
+[16:12:29.065353] Rolling MAR Diff Head (Token num 26496) runtime: 0.019009828567504883s
+[16:12:29.169186] Rolling MAR Enc-Dec runtime: 0.1031637191772461s
+[16:12:29.189408] Rolling MAR Diff Head (Token num 26112) runtime: 0.018878698348999023s
+[16:12:29.293117] Rolling MAR Enc-Dec runtime: 0.10312485694885254s
+[16:12:29.312463] Rolling MAR Diff Head (Token num 25856) runtime: 0.01832437515258789s
+[16:12:29.416204] Rolling MAR Enc-Dec runtime: 0.10316300392150879s
+[16:12:29.435976] Rolling MAR Diff Head (Token num 25472) runtime: 0.018439292907714844s
+[16:12:29.539694] Rolling MAR Enc-Dec runtime: 0.10311222076416016s
+[16:12:29.558810] Rolling MAR Diff Head (Token num 25216) runtime: 0.01805734634399414s
+[16:12:29.662524] Rolling MAR Enc-Dec runtime: 0.10313153266906738s
+[16:12:29.682202] Rolling MAR Diff Head (Token num 24832) runtime: 0.018541812896728516s
+[16:12:29.785915] Rolling MAR Enc-Dec runtime: 0.10311365127563477s
+[16:12:29.805280] Rolling MAR Diff Head (Token num 24576) runtime: 0.018326520919799805s
+[16:12:29.908991] Rolling MAR Enc-Dec runtime: 0.10312080383300781s
+[16:12:29.927463] Rolling MAR Diff Head (Token num 24192) runtime: 0.017406463623046875s
+[16:12:30.031161] Rolling MAR Enc-Dec runtime: 0.1031341552734375s
+[16:12:30.049555] Rolling MAR Diff Head (Token num 23808) runtime: 0.0173490047454834s
+[16:12:30.153285] Rolling MAR Enc-Dec runtime: 0.103118896484375s
+[16:12:30.171454] Rolling MAR Diff Head (Token num 23424) runtime: 0.01706075668334961s
+[16:12:30.275245] Rolling MAR Enc-Dec runtime: 0.10315585136413574s
+[16:12:30.293635] Rolling MAR Diff Head (Token num 23168) runtime: 0.017081022262573242s
+[16:12:30.397381] Rolling MAR Enc-Dec runtime: 0.10314106941223145s
+[16:12:30.415597] Rolling MAR Diff Head (Token num 22784) runtime: 0.0171663761138916s
+[16:12:30.519301] Rolling MAR Enc-Dec runtime: 0.10312938690185547s
+[16:12:30.536581] Rolling MAR Diff Head (Token num 22400) runtime: 0.016277074813842773s
+[16:12:30.640321] Rolling MAR Enc-Dec runtime: 0.10315275192260742s
+[16:12:30.658015] Rolling MAR Diff Head (Token num 22016) runtime: 0.016316652297973633s
+[16:12:30.761757] Rolling MAR Enc-Dec runtime: 0.1031193733215332s
+[16:12:30.779276] Rolling MAR Diff Head (Token num 21632) runtime: 0.016451120376586914s
+[16:12:30.882986] Rolling MAR Enc-Dec runtime: 0.10312914848327637s
+[16:12:30.900346] Rolling MAR Diff Head (Token num 21248) runtime: 0.016219377517700195s
+[16:12:31.004052] Rolling MAR Enc-Dec runtime: 0.10310864448547363s
+[16:12:31.021007] Rolling MAR Diff Head (Token num 20864) runtime: 0.015930891036987305s
+[16:12:31.124702] Rolling MAR Enc-Dec runtime: 0.10312128067016602s
+[16:12:31.140912] Rolling MAR Diff Head (Token num 20480) runtime: 0.015147686004638672s
+[16:12:31.244661] Rolling MAR Enc-Dec runtime: 0.10316133499145508s
+[16:12:31.260501] Rolling MAR Diff Head (Token num 19968) runtime: 0.014784574508666992s
+[16:12:31.364156] Rolling MAR Enc-Dec runtime: 0.10309958457946777s
+[16:12:31.380338] Rolling MAR Diff Head (Token num 19584) runtime: 0.01510477066040039s
+[16:12:31.484046] Rolling MAR Enc-Dec runtime: 0.10311365127563477s
+[16:12:31.500193] Rolling MAR Diff Head (Token num 19200) runtime: 0.014975786209106445s
+[16:12:31.603887] Rolling MAR Enc-Dec runtime: 0.10311675071716309s
+[16:12:31.619509] Rolling MAR Diff Head (Token num 18816) runtime: 0.014584064483642578s
+[16:12:31.723285] Rolling MAR Enc-Dec runtime: 0.10314822196960449s
+[16:12:31.739072] Rolling MAR Diff Head (Token num 18304) runtime: 0.014462947845458984s
+[16:12:31.842765] Rolling MAR Enc-Dec runtime: 0.10311651229858398s
+[16:12:31.857838] Rolling MAR Diff Head (Token num 17920) runtime: 0.014019250869750977s
+[16:12:31.961521] Rolling MAR Enc-Dec runtime: 0.10310912132263184s
+[16:12:31.976386] Rolling MAR Diff Head (Token num 17536) runtime: 0.013822317123413086s
+[16:12:32.080063] Rolling MAR Enc-Dec runtime: 0.10310769081115723s
+[16:12:32.094362] Rolling MAR Diff Head (Token num 17024) runtime: 0.013238906860351562s
+[16:12:32.198210] Rolling MAR Enc-Dec runtime: 0.10315895080566406s
+[16:12:32.212178] Rolling MAR Diff Head (Token num 16640) runtime: 0.01287698745727539s
+[16:12:32.315875] Rolling MAR Enc-Dec runtime: 0.1031196117401123s
+[16:12:32.329720] Rolling MAR Diff Head (Token num 16128) runtime: 0.012854337692260742s
+[16:12:32.433414] Rolling MAR Enc-Dec runtime: 0.10312652587890625s
+[16:12:32.447114] Rolling MAR Diff Head (Token num 15744) runtime: 0.01266789436340332s
+[16:12:32.550835] Rolling MAR Enc-Dec runtime: 0.10314488410949707s
+[16:12:32.564189] Rolling MAR Diff Head (Token num 15232) runtime: 0.01228189468383789s
+[16:12:32.667878] Rolling MAR Enc-Dec runtime: 0.10312032699584961s
+[16:12:32.680912] Rolling MAR Diff Head (Token num 14848) runtime: 0.012042999267578125s
+[16:12:32.784577] Rolling MAR Enc-Dec runtime: 0.1031031608581543s
+[16:12:32.797248] Rolling MAR Diff Head (Token num 14336) runtime: 0.011710405349731445s
+[16:12:32.900951] Rolling MAR Enc-Dec runtime: 0.10312986373901367s
+[16:12:32.913330] Rolling MAR Diff Head (Token num 13824) runtime: 0.011320829391479492s
+[16:12:33.017018] Rolling MAR Enc-Dec runtime: 0.10311293601989746s
+[16:12:33.029182] Rolling MAR Diff Head (Token num 13440) runtime: 0.011121034622192383s
+[16:12:33.132897] Rolling MAR Enc-Dec runtime: 0.10312247276306152s
+[16:12:33.144562] Rolling MAR Diff Head (Token num 12928) runtime: 0.010715007781982422s
+[16:12:33.248242] Rolling MAR Enc-Dec runtime: 0.1031336784362793s
+[16:12:33.260018] Rolling MAR Diff Head (Token num 12416) runtime: 0.01060175895690918s
+[16:12:33.363716] Rolling MAR Enc-Dec runtime: 0.10312438011169434s
+[16:12:33.374918] Rolling MAR Diff Head (Token num 12032) runtime: 0.010170936584472656s
+[16:12:33.478592] Rolling MAR Enc-Dec runtime: 0.10311007499694824s
+[16:12:33.489399] Rolling MAR Diff Head (Token num 11520) runtime: 0.009839296340942383s
+[16:12:33.593152] Rolling MAR Enc-Dec runtime: 0.10313177108764648s
+[16:12:33.604151] Rolling MAR Diff Head (Token num 11008) runtime: 0.009705305099487305s
+[16:12:33.707824] Rolling MAR Enc-Dec runtime: 0.10310101509094238s
+[16:12:33.718038] Rolling MAR Diff Head (Token num 10496) runtime: 0.009217977523803711s
+[16:12:33.821679] Rolling MAR Enc-Dec runtime: 0.10309505462646484s
+[16:12:33.831252] Rolling MAR Diff Head (Token num 10112) runtime: 0.00857853889465332s
+[16:12:33.935029] Rolling MAR Enc-Dec runtime: 0.10309100151062012s
+[16:12:33.944295] Rolling MAR Diff Head (Token num 9600) runtime: 0.008313894271850586s
+[16:12:34.047958] Rolling MAR Enc-Dec runtime: 0.10310602188110352s
+[16:12:34.057147] Rolling MAR Diff Head (Token num 9088) runtime: 0.008214235305786133s
+[16:12:34.160876] Rolling MAR Enc-Dec runtime: 0.10313773155212402s
+[16:12:34.170131] Rolling MAR Diff Head (Token num 8576) runtime: 0.007990121841430664s
+[16:12:34.273800] Rolling MAR Enc-Dec runtime: 0.10307765007019043s
+[16:12:34.282322] Rolling MAR Diff Head (Token num 8064) runtime: 0.007578372955322266s
+[16:12:34.385972] Rolling MAR Enc-Dec runtime: 0.10309839248657227s
+[16:12:34.394125] Rolling MAR Diff Head (Token num 7552) runtime: 0.0072002410888671875s
+[16:12:34.497800] Rolling MAR Enc-Dec runtime: 0.10311675071716309s
+[16:12:34.505725] Rolling MAR Diff Head (Token num 7040) runtime: 0.006956815719604492s
+[16:12:34.609370] Rolling MAR Enc-Dec runtime: 0.10309362411499023s
+[16:12:34.616980] Rolling MAR Diff Head (Token num 6528) runtime: 0.0065708160400390625s
+[16:12:34.720645] Rolling MAR Enc-Dec runtime: 0.10310053825378418s
+[16:12:34.727725] Rolling MAR Diff Head (Token num 6016) runtime: 0.0061032772064208984s
+[16:12:34.831391] Rolling MAR Enc-Dec runtime: 0.10311675071716309s
+[16:12:34.838275] Rolling MAR Diff Head (Token num 5632) runtime: 0.005911588668823242s
+[16:12:34.941914] Rolling MAR Enc-Dec runtime: 0.10309696197509766s
+[16:12:34.948212] Rolling MAR Diff Head (Token num 5120) runtime: 0.00534367561340332s
+[16:12:35.051860] Rolling MAR Enc-Dec runtime: 0.10310244560241699s
+[16:12:35.058123] Rolling MAR Diff Head (Token num 4608) runtime: 0.005248308181762695s
+[16:12:35.161756] Rolling MAR Enc-Dec runtime: 0.10310888290405273s
+[16:12:35.167728] Rolling MAR Diff Head (Token num 4096) runtime: 0.004982471466064453s
+[16:12:35.271365] Rolling MAR Enc-Dec runtime: 0.10310626029968262s
+[16:12:35.277160] Rolling MAR Diff Head (Token num 3584) runtime: 0.004816770553588867s
+[16:12:35.380816] Rolling MAR Enc-Dec runtime: 0.1031029224395752s
+[16:12:35.385965] Rolling MAR Diff Head (Token num 3072) runtime: 0.004160881042480469s
+[16:12:35.489593] Rolling MAR Enc-Dec runtime: 0.10309028625488281s
+[16:12:35.494620] Rolling MAR Diff Head (Token num 2560) runtime: 0.004006624221801758s
+[16:12:35.598294] Rolling MAR Enc-Dec runtime: 0.10312128067016602s
+[16:12:35.603589] Rolling MAR Diff Head (Token num 2048) runtime: 0.0040667057037353516s
+[16:12:35.707217] Rolling MAR Enc-Dec runtime: 0.10308623313903809s
+[16:12:35.711941] Rolling MAR Diff Head (Token num 1536) runtime: 0.0037508010864257812s
+[16:12:35.815579] Rolling MAR Enc-Dec runtime: 0.1031045913696289s
+[16:12:35.820388] Rolling MAR Diff Head (Token num 1024) runtime: 0.003789186477661133s
+[16:12:35.924036] Rolling MAR Enc-Dec runtime: 0.10310149192810059s
+[16:12:35.928530] Rolling MAR Diff Head (Token num 512) runtime: 0.0035486221313476562s
+[16:12:35.929139] Rolling MAR runtime: 23.996270656585693s
+[16:12:36.628045] VAE Decoding runtime: 0.6987831592559814s
+[16:12:36.628653] Generating 128 images takes 24.69587 seconds, 0.19294 sec per image
+[16:12:37.407176] Saving Figures runtime: 0.7390377521514893s

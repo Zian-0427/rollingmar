@@ -19,34 +19,39 @@ class DiffLoss(nn.Module):
             num_res_blocks=depth,
             grad_checkpointing=grad_checkpointing
         )
-
+        self.num_sampling_steps = num_sampling_steps
         self.train_diffusion = create_diffusion(timestep_respacing="", noise_schedule="cosine")
         self.gen_diffusion = create_diffusion(timestep_respacing=num_sampling_steps, noise_schedule="cosine")
 
-    def forward(self, target, z, mask=None):
-        t = torch.randint(0, self.train_diffusion.num_timesteps, (target.shape[0],), device=target.device)
-        model_kwargs = dict(c=z)
+    def t_sample(self, shape, device):
+        return torch.randint(0, self.train_diffusion.num_timesteps, shape, device=device)
+
+    def forward(self, target, z, mask=None, embed_t=None):
+        t = self.t_sample((target.shape[0],), target.device)
+        model_kwargs = dict(c=z, embed_t=embed_t)
         loss_dict = self.train_diffusion.training_losses(self.net, target, t, model_kwargs)
         loss = loss_dict["loss"]
         if mask is not None:
             loss = (loss * mask).sum() / mask.sum()
         return loss.mean()
 
-    def sample(self, z, temperature=1.0, cfg=1.0):
+    def sample(self, z, temperature=1.0, cfg=1.0, denoise_t_per_step=None, starting_point=None, starting_t=None, embed_t=None):
         # diffusion loss sampling
         if not cfg == 1.0:
-            noise = torch.randn(z.shape[0] // 2, self.in_channels).cuda()
-            noise = torch.cat([noise, noise], dim=0)
+            # noise = torch.randn(z.shape[0] // 2, self.in_channels).cuda()
+            # noise = torch.cat([noise, noise], dim=0)
             model_kwargs = dict(c=z, cfg_scale=cfg)
             sample_fn = self.net.forward_with_cfg
         else:
-            noise = torch.randn(z.shape[0], self.in_channels).cuda()
+            # noise = torch.randn(z.shape[0], self.in_channels).cuda()
             model_kwargs = dict(c=z)
             sample_fn = self.net.forward
+        noise = starting_point
+        model_kwargs["embed_t"] = embed_t
 
         sampled_token_latent = self.gen_diffusion.p_sample_loop(
             sample_fn, noise.shape, noise, clip_denoised=False, model_kwargs=model_kwargs, progress=False,
-            temperature=temperature
+            temperature=temperature, starting_t=starting_t, denoise_t_per_step=denoise_t_per_step, 
         )
 
         return sampled_token_latent
@@ -176,6 +181,7 @@ class SimpleMLPAdaLN(nn.Module):
         self.grad_checkpointing = grad_checkpointing
 
         self.time_embed = TimestepEmbedder(model_channels)
+        self.embed_time_embed = TimestepEmbedder(model_channels)
         self.cond_embed = nn.Linear(z_channels, model_channels)
 
         self.input_proj = nn.Linear(in_channels, model_channels)
@@ -203,6 +209,9 @@ class SimpleMLPAdaLN(nn.Module):
         nn.init.normal_(self.time_embed.mlp[0].weight, std=0.02)
         nn.init.normal_(self.time_embed.mlp[2].weight, std=0.02)
 
+        nn.init.normal_(self.embed_time_embed.mlp[0].weight, std=0.02)
+        nn.init.normal_(self.embed_time_embed.mlp[2].weight, std=0.02)
+
         # Zero-out adaLN modulation layers
         for block in self.res_blocks:
             nn.init.constant_(block.adaLN_modulation[-1].weight, 0)
@@ -214,7 +223,7 @@ class SimpleMLPAdaLN(nn.Module):
         nn.init.constant_(self.final_layer.linear.weight, 0)
         nn.init.constant_(self.final_layer.linear.bias, 0)
 
-    def forward(self, x, t, c):
+    def forward(self, x, t, c, embed_t):
         """
         Apply the model to an input batch.
         :param x: an [N x C] Tensor of inputs.
@@ -225,8 +234,9 @@ class SimpleMLPAdaLN(nn.Module):
         x = self.input_proj(x)
         t = self.time_embed(t)
         c = self.cond_embed(c)
+        embed_t = self.embed_time_embed(embed_t)
 
-        y = t + c
+        y = t + c + embed_t
 
         if self.grad_checkpointing and not torch.jit.is_scripting():
             for block in self.res_blocks:
@@ -237,10 +247,10 @@ class SimpleMLPAdaLN(nn.Module):
 
         return self.final_layer(x, y)
 
-    def forward_with_cfg(self, x, t, c, cfg_scale):
+    def forward_with_cfg(self, x, t, c, embed_t, cfg_scale):
         half = x[: len(x) // 2]
         combined = torch.cat([half, half], dim=0)
-        model_out = self.forward(combined, t, c)
+        model_out = self.forward(combined, t, c, embed_t)
         eps, rest = model_out[:, :self.in_channels], model_out[:, self.in_channels:]
         cond_eps, uncond_eps = torch.split(eps, len(eps) // 2, dim=0)
         half_eps = uncond_eps + cfg_scale * (cond_eps - uncond_eps)
