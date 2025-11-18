@@ -133,7 +133,7 @@ def get_args_parser():
     parser.add_argument('--cached_path', default='', help='path to cached latents')
     parser.add_argument('--not_load_ema_weight', action='store_true')
 
-    parser.add_argument('--case_study', action='store_true')
+    parser.add_argument('--record_traj', action='store_true')
     parser.add_argument('--specific_label', default=-1, type=int)
     parser.add_argument('--denoise_t_per_step', default=10, type=int,
                     help='number of autoregressive iterations to generate an image')
@@ -213,7 +213,7 @@ def main(args):
         num_sampling_steps=args.num_sampling_steps,
         diffusion_batch_mul=args.diffusion_batch_mul,
         grad_checkpointing=args.grad_checkpointing,
-        return_full=args.case_study,
+        record_traj=args.record_traj,
         denoise_t_per_step=args.denoise_t_per_step
     )
 
