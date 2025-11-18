@@ -13,6 +13,21 @@ import enum
 from .diffusion_utils import discretized_gaussian_log_likelihood, normal_kl
 
 
+def _infer_device_from_model(model):
+    if isinstance(model, th.nn.Module):
+        module = model
+    else:
+        module = getattr(model, "__self__", None)
+        if not isinstance(module, th.nn.Module):
+            module = None
+    if module is not None:
+        try:
+            return next(module.parameters()).device
+        except StopIteration:
+            pass
+    return th.device("cpu")
+
+
 def mean_flat(tensor):
     """
     Take the mean over all non-batch dimensions.
@@ -494,11 +509,16 @@ class GaussianDiffusion:
         p_sample().
         """
         assert isinstance(shape, (tuple, list))
+        if device is None:
+            if noise is not None:
+                device = noise.device
+            else:
+                device = _infer_device_from_model(model)
         if noise is not None:
-            img = noise
+            img = noise.to(device)
         else:
             assert denoise_t_per_step is None
-            img = th.randn(*shape).cuda()
+            img = th.randn(*shape, device=device)
 
         if denoise_t_per_step is None:
             indices = list(range(self.num_timesteps))[::-1]
@@ -511,9 +531,12 @@ class GaussianDiffusion:
 
         #     indices = tqdm(indices)
         
+        if starting_t is not None and starting_t.device != device:
+            starting_t = starting_t.to(device)
+
         for i in indices:
             if denoise_t_per_step is None:
-                t = th.tensor([i] * shape[0]).cuda()
+                t = th.full((shape[0],), i, device=device, dtype=th.long)
             else:
                 t = starting_t - i
                 assert (t >= 0).all()
@@ -670,10 +693,15 @@ class GaussianDiffusion:
         Same usage as p_sample_loop_progressive().
         """
         assert isinstance(shape, (tuple, list))
+        if device is None:
+            if noise is not None:
+                device = noise.device
+            else:
+                device = _infer_device_from_model(model)
         if noise is not None:
-            img = noise
+            img = noise.to(device)
         else:
-            img = th.randn(*shape).cuda()
+            img = th.randn(*shape, device=device)
         indices = list(range(self.num_timesteps))[::-1]
 
         if progress:
@@ -683,7 +711,7 @@ class GaussianDiffusion:
             indices = tqdm(indices)
 
         for i in indices:
-            t = th.tensor([i] * shape[0]).cuda()
+            t = th.full((shape[0],), i, device=device, dtype=th.long)
             with th.no_grad():
                 out = self.ddim_sample(
                     model,
