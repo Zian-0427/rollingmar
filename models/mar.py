@@ -77,7 +77,7 @@ class MAR(nn.Module):
                  num_sampling_steps='100',
                  diffusion_batch_mul=4,
                  grad_checkpointing=False,
-                 return_full=False,
+                 record_traj=False,
                  denoise_t_per_step=10
                  ):
         super().__init__()
@@ -131,7 +131,7 @@ class MAR(nn.Module):
         self.decoder_norm = norm_layer(decoder_embed_dim)
         self.diffusion_pos_embed_learned = nn.Parameter(torch.zeros(1, self.seq_len, decoder_embed_dim))
 
-        self.return_full = return_full
+        self.record_traj = record_traj
         self.denoise_t_per_step = denoise_t_per_step
 
         self.initialize_weights()
@@ -349,8 +349,7 @@ class MAR(nn.Module):
         tokens = torch.randn_like(tokens)
         mask_ratio = 1.0
 
-        if self.return_full:
-            return_list = []
+        trajectory_latents = [] if self.record_traj else None
 
         # generate latents
         cnt = 0
@@ -424,8 +423,8 @@ class MAR(nn.Module):
             cur_tokens[denoising_map_iter.nonzero(as_tuple=True)] = sampled_token_latent
             tokens = cur_tokens.clone()
 
-            if self.return_full:
-                return_list.append(tokens.clone())
+            if self.record_traj:
+                trajectory_latents.append(tokens.clone())
 
             tracker.advance(denoise_t_per_step)
 
@@ -436,11 +435,13 @@ class MAR(nn.Module):
             
             cnt += 1
 
-        # unpatchify
-        if self.return_full:
-            tokens = torch.stack(return_list, dim=1)
-            tokens = tokens.flatten(0, 1)
         tokens = self.unpatchify(tokens)
+        if self.record_traj:
+            traj = torch.stack(trajectory_latents, dim=1)
+            traj = traj.flatten(0, 1)
+            traj = self.unpatchify(traj)
+            traj = traj.view(bsz, -1, traj.shape[1], traj.shape[2], traj.shape[3])
+            return tokens, traj
         return tokens
 
 def mar_base(**kwargs):

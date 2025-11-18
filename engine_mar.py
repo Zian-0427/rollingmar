@@ -148,6 +148,9 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
     used_time = 0
     gen_img_cnt = 0
 
+    if args.record_traj and misc.get_rank() == 0:
+        print(f"[record_traj] Recording {args.num_iter} MAR iterations; trajectories will be stored under {save_folder}/trajectory/")
+
     for i in range(num_steps):
         print("Generation step {}/{}".format(i, num_steps))
 
@@ -160,14 +163,30 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
         start_time = time.time()
 
         # generation
+        traj_images = None
         with torch.no_grad():
             with torch.cuda.amp.autocast():
                 with timer(enable_timer, "Rolling MAR"):
-                    sampled_tokens = model_without_ddp.sample_tokens(bsz=batch_size, num_iter=args.num_iter, cfg=cfg,
-                                                                    cfg_schedule=args.cfg_schedule, labels=labels_gen,
-                                                                    temperature=args.temperature, enable_timer=enable_timer)
+                    sampled = model_without_ddp.sample_tokens(
+                        bsz=batch_size,
+                        num_iter=args.num_iter,
+                        cfg=cfg,
+                        cfg_schedule=args.cfg_schedule,
+                        labels=labels_gen,
+                        temperature=args.temperature,
+                        enable_timer=enable_timer
+                    )
+                if args.record_traj:
+                    sampled_tokens, traj_tokens = sampled
+                else:
+                    sampled_tokens, traj_tokens = sampled, None
                 with timer(enable_timer, "VAE Decoding"):
                     sampled_images = vae.decode(sampled_tokens / 0.2325)
+                    if traj_tokens is not None:
+                        traj_bsz, traj_steps = traj_tokens.shape[0], traj_tokens.shape[1]
+                        traj_flat = traj_tokens.view(traj_bsz * traj_steps, traj_tokens.shape[2], traj_tokens.shape[3], traj_tokens.shape[4])
+                        traj_decoded = vae.decode(traj_flat / 0.2325)
+                        traj_images = traj_decoded.view(traj_bsz, traj_steps, traj_decoded.shape[1], traj_decoded.shape[2], traj_decoded.shape[3])
 
         # measure speed after the first generation batch
         if i >= 1:
@@ -182,6 +201,9 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
             pass
         sampled_images = sampled_images.detach().cpu()
         sampled_images = (sampled_images + 1) / 2
+        if traj_images is not None:
+            traj_images = (traj_images + 1) / 2
+            traj_images = traj_images.detach().cpu()
 
         # distributed save
         with timer(enable_timer, "Saving Figures"):
@@ -192,6 +214,16 @@ def evaluate(model_without_ddp, vae, ema_params, args, epoch, batch_size=16, log
                 gen_img = np.round(np.clip(sampled_images[b_id].numpy().transpose([1, 2, 0]) * 255, 0, 255))
                 gen_img = gen_img.astype(np.uint8)[:, :, ::-1]
                 cv2.imwrite(os.path.join(save_folder, '{}.png'.format(str(img_id).zfill(5))), gen_img)
+                if traj_images is not None:
+                    traj_sample = traj_images[b_id].numpy()
+                    traj_dir = os.path.join(save_folder, "trajectory", str(img_id).zfill(5))
+                    os.makedirs(traj_dir, exist_ok=True)
+                    for step_idx in range(traj_sample.shape[0]):
+                        step_img = np.round(np.clip(traj_sample[step_idx].transpose([1, 2, 0]) * 255, 0, 255))
+                        step_img = step_img.astype(np.uint8)[:, :, ::-1]
+                        cv2.imwrite(os.path.join(traj_dir, f"step_{step_idx:03d}.png"), step_img)
+            if traj_images is not None and misc.get_rank() == 0:
+                print(f"[record_traj] Batch {i}: saved trajectories to {os.path.join(save_folder, 'trajectory')}")
 
     try:
         torch.distributed.barrier()
