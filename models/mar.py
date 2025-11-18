@@ -7,6 +7,7 @@ import math
 import torch
 import torch.nn as nn
 from torch.utils.checkpoint import checkpoint
+from torch.cuda.amp import autocast
 
 from timm.models.vision_transformer import Block
 
@@ -78,6 +79,7 @@ class MAR(nn.Module):
                  diffusion_batch_mul=4,
                  grad_checkpointing=False,
                  record_traj=False,
+                 traj_frame_k=None,
                  denoise_t_per_step=10
                  ):
         super().__init__()
@@ -132,6 +134,7 @@ class MAR(nn.Module):
         self.diffusion_pos_embed_learned = nn.Parameter(torch.zeros(1, self.seq_len, decoder_embed_dim))
 
         self.record_traj = record_traj
+        self.traj_frame_k = traj_frame_k
         self.denoise_t_per_step = denoise_t_per_step
 
         self.initialize_weights()
@@ -349,7 +352,16 @@ class MAR(nn.Module):
         tokens = torch.randn_like(tokens)
         mask_ratio = 1.0
 
-        trajectory_latents = [] if self.record_traj else None
+        traj_frames = []
+        traj_notice_printed = False
+        traj_capture_steps = []
+        traj_capture_idx = 0
+        if self.record_traj:
+            target_frames = self.traj_frame_k if (self.traj_frame_k is not None and self.traj_frame_k > 0) else num_iter
+            target_frames = max(1, min(target_frames, num_iter))
+            traj_capture_steps = torch.linspace(0, num_iter - 1, steps=target_frames, device=device)
+            traj_capture_steps = torch.unique(traj_capture_steps.round().long()).tolist()
+            traj_capture_idx = 0
 
         # generate latents
         cnt = 0
@@ -415,8 +427,12 @@ class MAR(nn.Module):
                 cfg_iter = cfg
             else:
                 raise NotImplementedError
+            diff_z = z.to(torch.float32)
+            diff_starting_point = starting_point.to(torch.float32)
             with timer(enable_timer, f"Rolling MAR Diff Head (Token num {z.shape[0]})"):
-                sampled_token_latent = self.diffloss.sample(z, temperature, cfg_iter, denoise_t_per_step, starting_point=starting_point, starting_t=starting_t, embed_t=embed_t)
+                with autocast(enabled=False):
+                    sampled_token_latent = self.diffloss.sample(diff_z, float(temperature), cfg_iter, denoise_t_per_step, starting_point=diff_starting_point, starting_t=starting_t, embed_t=embed_t)
+                sampled_token_latent = sampled_token_latent.to(tokens.dtype)
             if not cfg == 1.0:
                 sampled_token_latent, _ = sampled_token_latent.chunk(2, dim=0)  # Remove null class samples
                 denoising_map_iter, _ = denoising_map_iter.chunk(2, dim=0)
@@ -424,7 +440,13 @@ class MAR(nn.Module):
             tokens = cur_tokens.clone()
 
             if self.record_traj:
-                trajectory_latents.append(tokens.clone())
+                while traj_capture_idx < len(traj_capture_steps) and cnt >= traj_capture_steps[traj_capture_idx]:
+                    if not traj_notice_printed:
+                        print("[record_traj] Capturing intermediate MAR latents for trajectory logging.")
+                        traj_notice_printed = True
+                    print(f"[record_traj] Stored trajectory frame {traj_capture_idx + 1}/{len(traj_capture_steps)} at iteration {cnt}.")
+                    traj_frames.append(tokens[:bsz].clone())
+                    traj_capture_idx += 1
 
             tracker.advance(denoise_t_per_step)
 
@@ -435,13 +457,21 @@ class MAR(nn.Module):
             
             cnt += 1
 
-        tokens = self.unpatchify(tokens)
         if self.record_traj:
-            traj = torch.stack(trajectory_latents, dim=1)
+            while traj_capture_idx < len(traj_capture_steps):
+                if not traj_notice_printed:
+                    print("[record_traj] Capturing intermediate MAR latents for trajectory logging.")
+                    traj_notice_printed = True
+                print(f"[record_traj] Stored trajectory frame {traj_capture_idx + 1}/{len(traj_capture_steps)} at final state.")
+                traj_frames.append(tokens[:bsz].clone())
+                traj_capture_idx += 1
+            traj = torch.stack(traj_frames, dim=1)
             traj = traj.flatten(0, 1)
             traj = self.unpatchify(traj)
             traj = traj.view(bsz, -1, traj.shape[1], traj.shape[2], traj.shape[3])
-            return tokens, traj
+            tokens_img = self.unpatchify(tokens)
+            return tokens_img, traj
+        tokens = self.unpatchify(tokens)
         return tokens
 
 def mar_base(**kwargs):

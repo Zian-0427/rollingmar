@@ -134,6 +134,8 @@ def get_args_parser():
     parser.add_argument('--not_load_ema_weight', action='store_true')
 
     parser.add_argument('--record_traj', action='store_true')
+    parser.add_argument('--record_traj_k', type=int, default=0,
+                        help='Number of uniformly spaced trajectory frames to store when --record_traj is set (0 = all)')
     parser.add_argument('--specific_label', default=-1, type=int)
     parser.add_argument('--denoise_t_per_step', default=10, type=int,
                     help='number of autoregressive iterations to generate an image')
@@ -214,6 +216,7 @@ def main(args):
         diffusion_batch_mul=args.diffusion_batch_mul,
         grad_checkpointing=args.grad_checkpointing,
         record_traj=args.record_traj,
+        traj_frame_k=args.record_traj_k,
         denoise_t_per_step=args.denoise_t_per_step
     )
 
