@@ -41,6 +41,8 @@ class MAR(nn.Module):
                  num_sampling_steps='100',
                  diffusion_batch_mul=4,
                  grad_checkpointing=False,
+                 return_full=False,
+                 denoise_t_per_step=10
                  ):
         super().__init__()
 
@@ -93,6 +95,8 @@ class MAR(nn.Module):
         self.decoder_norm = norm_layer(decoder_embed_dim)
         self.diffusion_pos_embed_learned = nn.Parameter(torch.zeros(1, self.seq_len, decoder_embed_dim))
 
+        self.return_full = return_full
+        self.denoise_t_per_step = denoise_t_per_step
 
         self.initialize_weights()
 
@@ -300,11 +304,14 @@ class MAR(nn.Module):
         done_map = torch.zeros((bsz, self.seq_len), device=tokens.device, dtype=torch.bool)
         denoising_map = torch.zeros((bsz, self.seq_len), device=tokens.device, dtype=torch.bool)
 
-        denoise_t_per_step = self.gen_num_timesteps // num_iter
-        assert self.gen_num_timesteps // num_iter > 0 and self.gen_num_timesteps % num_iter == 0, f"Please ensure that the diffusion step is a multiple of the AR step."
+        denoise_t_per_step = self.denoise_t_per_step
+        assert self.gen_num_timesteps % self.denoise_t_per_step == 0
 
         tokens = torch.randn_like(tokens)
         mask_ratio = 1.0
+
+        if self.return_full:
+            return_list = []
 
         # generate latents
         cnt = 0
@@ -380,6 +387,9 @@ class MAR(nn.Module):
             cur_tokens[denoising_map_iter.nonzero(as_tuple=True)] = sampled_token_latent
             tokens = cur_tokens.clone()
 
+            if self.return_full:
+                return_list.append(tokens.clone())
+
             # Be careful...
             t_map[denoising_map_iter.nonzero(as_tuple=True)] = t_map[denoising_map_iter.nonzero(as_tuple=True)] - denoise_t_per_step
             assert (t_map >= -1).all()
@@ -394,9 +404,11 @@ class MAR(nn.Module):
             cnt += 1
 
         # unpatchify
+        if self.return_full:
+            tokens = torch.stack(return_list, dim=1)
+            tokens = tokens.flatten(0, 1)
         tokens = self.unpatchify(tokens)
         return tokens
-
 
 def mar_base(**kwargs):
     model = MAR(

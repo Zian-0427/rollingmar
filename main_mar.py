@@ -131,7 +131,12 @@ def get_args_parser():
     parser.add_argument('--cal_on_the_fly', action='store_true')
     parser.set_defaults(use_cached=False)
     parser.add_argument('--cached_path', default='', help='path to cached latents')
+    parser.add_argument('--not_load_ema_weight', action='store_true')
 
+    parser.add_argument('--case_study', action='store_true')
+    parser.add_argument('--specific_label', default=-1, type=int)
+    parser.add_argument('--denoise_t_per_step', default=10, type=int,
+                    help='number of autoregressive iterations to generate an image')
     return parser
 
 
@@ -208,6 +213,8 @@ def main(args):
         num_sampling_steps=args.num_sampling_steps,
         diffusion_batch_mul=args.diffusion_batch_mul,
         grad_checkpointing=args.grad_checkpointing,
+        return_full=args.case_study,
+        denoise_t_per_step=args.denoise_t_per_step
     )
 
     print("Model = %s" % str(model))
@@ -244,8 +251,11 @@ def main(args):
         model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
         model_params = list(model_without_ddp.parameters())
         try:
-            ema_state_dict = checkpoint['model_ema']
-            ema_params = [ema_state_dict[name].cuda() for name, _ in model_without_ddp.named_parameters()]
+            if not args.not_load_ema_weight:
+                ema_state_dict = checkpoint['model_ema']
+                ema_params = [ema_state_dict[name].cuda() for name, _ in model_without_ddp.named_parameters()]
+            else:
+                ema_params = [param.clone() for param in model_params]
         except:
             print("Cannot load ema. Using model parameters.")
             ema_params = [param.clone() for param in model_params]
