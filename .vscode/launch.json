@@ -24,7 +24,7 @@
                 "--diffloss_w", "1024",
                 "--epochs", "400",
                 "--warmup_epochs", "100",
-                "--batch_size", "128",
+                // "--batch_size", "128",
                 "--blr", "1.0e-4",
                 "--diffusion_batch_mul", "4",
                 "--output_dir", "/home/lizian/mar/output_dir/eval/rollingmar",
@@ -35,7 +35,11 @@
                 "--evaluate",
                 "--denoise_t_per_step", "10",
                 "--resume", "/home/lizian/mar/output_dir/rollingmar_full",
-                "--specific_label", "3"
+                "--specific_label", "3",
+                "--record_traj",
+                "--batch_size", "2",
+                "--eval_bsz", "2",
+                "--cfg", "3.0"
             ]
         },
 

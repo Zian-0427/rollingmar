@@ -393,7 +393,7 @@ class MAR(nn.Module):
 
             # mask ratio for the next round, following MaskGIT and MAGE.
             mask_ratio = np.cos(math.pi / 2. * (step + 1) / num_iter)
-            mask_len = torch.tensor([np.floor(self.seq_len * mask_ratio)], device=device)
+            mask_len = torch.tensor([np.floor(self.seq_len * mask_ratio)], device=device, dtype=x.dtype)
 
             # masks out at least one for the next iteration
             mask_len = torch.maximum(torch.ones(1, device=device),
@@ -416,7 +416,7 @@ class MAR(nn.Module):
                 starting_t = torch.cat([starting_t, starting_t], dim=0)
             else:
                 denoising_map_iter = denoising_mask
-            embed_t = t_map_iter[denoising_map_iter]
+            embed_t = t_map_iter[denoising_map_iter].to(torch.int64)
             
             # sample token latents for this step
             z = z[denoising_map_iter]
@@ -431,6 +431,7 @@ class MAR(nn.Module):
             diff_starting_point = starting_point.to(torch.float32)
             with timer(enable_timer, f"Rolling MAR Diff Head (Token num {z.shape[0]})"):
                 with autocast(enabled=False):
+                    print("diff_z", diff_z.dtype)
                     sampled_token_latent = self.diffloss.sample(diff_z, float(temperature), cfg_iter, denoise_t_per_step, starting_point=diff_starting_point, starting_t=starting_t, embed_t=embed_t)
                 sampled_token_latent = sampled_token_latent.to(tokens.dtype)
             if not cfg == 1.0:
